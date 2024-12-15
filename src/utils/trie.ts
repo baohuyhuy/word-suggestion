@@ -1,17 +1,11 @@
 import data from '@/data/words_dictionary.json';
 
-const ALPHABET_SIZE = 26;
-
-export class TrieNode {
-  child: Array<TrieNode | null>;
+class TrieNode {
+  children: { [key: string]: TrieNode };
   isEndOfWord: boolean;
 
   constructor() {
-    // await Promise((resolve) => setTimeout(resolve, 10000));
-    this.child = new Array<TrieNode | null>(26);
-    for (let i = 0; i < ALPHABET_SIZE; i++) {
-      this.child[i] = null;
-    }
+    this.children = {};
     this.isEndOfWord = false;
   }
 }
@@ -29,17 +23,52 @@ class Trie {
     }
   }
 
-  insert(str: string) {
-    if (!str) return;
-    let cur = this.root;
-    str.split('').forEach((c) => {
-      const index = c.charCodeAt(0) - 'a'.charCodeAt(0);
-      if (!cur.child[index]) {
-        cur.child[index] = new TrieNode();
+  insert(word: string) {
+    let node = this.root;
+    for (const char of word) {
+      if (!node.children[char]) {
+        node.children[char] = new TrieNode();
       }
-      cur = cur.child[index]!;
-    });
-    cur.isEndOfWord = true;
+      node = node.children[char];
+    }
+    node.isEndOfWord = true;
+  }
+
+  search(word: string): boolean {
+    let node = this.root;
+    for (const char of word) {
+      if (!node.children[char]) {
+        return false;
+      }
+      node = node.children[char];
+    }
+    return node.isEndOfWord;
+  }
+
+  delete(word: string): boolean {
+    return this.deleteHelper(this.root, word, 0);
+  }
+
+  private deleteHelper(node: TrieNode, word: string, depth: number): boolean {
+    if (!node) {
+      return false;
+    }
+
+    if (depth === word.length) {
+      if (!node.isEndOfWord) {
+        return false;
+      }
+      node.isEndOfWord = false;
+      return Object.keys(node.children).length === 0;
+    }
+
+    const char = word[depth];
+    if (!this.deleteHelper(node.children[char], word, depth + 1)) {
+      return false;
+    }
+
+    delete node.children[char];
+    return Object.keys(node.children).length === 0 && !node.isEndOfWord;
   }
 
   suggest(prefix: string, suggestionLimit: number) {
@@ -47,9 +76,8 @@ class Trie {
     let cur = this.root;
 
     for (const c of prefix) {
-      const index = c.charCodeAt(0) - 'a'.charCodeAt(0);
-      if (!cur.child[index]) return [];
-      cur = cur.child[index]!;
+      if (!cur.children[c]) return [];
+      cur = cur.children[c];
     }
     
     const suggestions: string[] = [];
@@ -59,14 +87,12 @@ class Trie {
 
     function findSuggestions(node: TrieNode, prefix: string) {
       if (suggestions.length >= suggestionLimit) return;
-      for (let i = 0; i < ALPHABET_SIZE; i++) {
-        if (node.child[i]) {
-          const newPrefix = prefix + String.fromCharCode(i + 'a'.charCodeAt(0));
-          if (node.child[i]!.isEndOfWord && suggestions.length < suggestionLimit) {
-            suggestions.push(newPrefix);
-          }
-          findSuggestions(node.child[i]!, newPrefix);
+      for (const char in node.children) {
+        const newPrefix = prefix + char;
+        if (node.children[char].isEndOfWord && suggestions.length < suggestionLimit) {
+          suggestions.push(newPrefix);
         }
+        findSuggestions(node.children[char], newPrefix);
       }
     }
 

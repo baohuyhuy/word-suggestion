@@ -4,12 +4,12 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
-import suggestWords from '@/utils/actions';
+import handleFormSubmit from '@/utils/actions';
 import clsx from 'clsx';
 import { useActionState } from 'react';
 import { useFormStatus } from 'react-dom';
 
-const initialState: {
+const searchInitialState: {
   searchType?: 'trie' | 'linear';
   word?: string;
   message?: string;
@@ -19,10 +19,14 @@ const initialState: {
 } = {
   searchType: 'trie',
   word: '',
+  limit: 1,
 };
 
 export default function SearchForm() {
-  const [state, formAction] = useActionState(suggestWords, initialState);
+  const [formState, formAction] = useActionState(
+    handleFormSubmit,
+    searchInitialState,
+  );
   const { pending } = useFormStatus();
 
   return (
@@ -36,12 +40,12 @@ export default function SearchForm() {
             type="text"
             required
             autoComplete="off"
-            defaultValue={state?.word}
+            defaultValue={formState?.word}
           />
         </div>
-        {state.message && <p aria-live="polite">{state.message}</p>}
+        
         <div className="flex flex-col gap-y-2">
-          <Label htmlFor="searchType">Search Method:</Label>
+          <Label htmlFor="searchType">Search method:</Label>
           <RadioGroup
             name="searchType"
             defaultValue="trie"
@@ -57,8 +61,9 @@ export default function SearchForm() {
             </div>
           </RadioGroup>
         </div>
+
         <div className="flex flex-col gap-y-2">
-          <Label htmlFor="suggestionLimit">Search Limit:</Label>
+          <Label htmlFor="suggestionLimit">Search limit:</Label>
           <RadioGroup
             name="suggestionLimit"
             defaultValue="1"
@@ -86,26 +91,50 @@ export default function SearchForm() {
             </div>
           </RadioGroup>
         </div>
-        <Button type="submit" disabled={pending}>
-          Search
-        </Button>
+
+        <div className="flex gap-4">
+          <Button
+            type="submit"
+            disabled={pending}
+            name="actionType"
+            value="search"
+          >
+            Search
+          </Button>
+          <Button
+            disabled={pending}
+            name="actionType"
+            value="add"
+            type="submit"
+          >
+            Add Word
+          </Button>
+          <Button
+            disabled={pending}
+            name="actionType"
+            value="delete"
+            type="submit"
+          >
+            Delete Word
+          </Button>
+        </div>
+
+        {formState.message && <p aria-live="polite">{formState.message}</p>}
       </form>
-      {state.timeTaken && <p>Running time: {state.timeTaken}</p>}
-      {state?.result && state?.limit && (
+      {formState.timeTaken && <p>Running time: {formState.timeTaken}</p>}
+      {formState?.result && formState?.limit && (
         <div
           className={clsx(
             'grid ',
-            // `grid-rows-${3}`,
-            `grid-rows-${state.limit / 2} md:grid-rows-${
-              state.limit / 3
-            } lg:grid-rows-${state.limit / 4} xl:grid-rows-${
-              state.limit / 5
-            } 2xl:grid-rows-${state.limit / 6}`,
-
+            `grid-rows-${formState.limit / 2} md:grid-rows-${
+              formState.limit / 3
+            } lg:grid-rows-${formState.limit / 4} xl:grid-rows-${
+              formState.limit / 5
+            } 2xl:grid-rows-${formState.limit / 6}`,
             'grid-cols-2 gap-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6',
           )}
         >
-          {state.result.map((word) => (
+          {formState.result.map((word) => (
             <span className="border p-2 font-semibold" key={word}>
               {word}
             </span>

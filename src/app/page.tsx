@@ -1,4 +1,4 @@
-import SearchForm from '@/components/SearchForm';
+import SearchForm from '@/components/search-form';
 import { TypographyH1 } from '@/components/typography';
 import ModeToggle from '@/components/ui/mode-toggle';
 
