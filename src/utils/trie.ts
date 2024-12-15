@@ -72,24 +72,31 @@ class Trie {
   }
 
   suggest(prefix: string, suggestionLimit: number) {
-    console.log("Trie Search");
+    // console.log("Trie Search");
+    let countComparisons = 0;
     let cur = this.root;
 
     for (const c of prefix) {
-      if (!cur.children[c]) return [];
+      if (++countComparisons && !cur.children[c])
+        return { suggestions: [], countComparisons };
       cur = cur.children[c];
     }
-    
+
     const suggestions: string[] = [];
-    if (cur.isEndOfWord) {
+    if (++countComparisons && cur.isEndOfWord) {
       suggestions.push(prefix);
     }
 
     function findSuggestions(node: TrieNode, prefix: string) {
-      if (suggestions.length >= suggestionLimit) return;
+      if (++countComparisons && suggestions.length >= suggestionLimit) return;
       for (const char in node.children) {
         const newPrefix = prefix + char;
-        if (node.children[char].isEndOfWord && suggestions.length < suggestionLimit) {
+        if (
+          ++countComparisons &&
+          ++countComparisons &&
+          node.children[char].isEndOfWord &&
+          suggestions.length < suggestionLimit
+        ) {
           suggestions.push(newPrefix);
         }
         findSuggestions(node.children[char], newPrefix);
@@ -98,7 +105,10 @@ class Trie {
 
     findSuggestions(cur, prefix);
 
-    return suggestions;
+    return {
+      suggestions,
+      countComparisons,
+    };
   }
 }
 

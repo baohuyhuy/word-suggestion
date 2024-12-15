@@ -30,6 +30,7 @@ export async function suggestWords(formData: FormData) {
       result?: string[];
       timeTaken?: string;
       limit?: number;
+      countComparisons?: number;
     } = {
       searchType: 'trie',
       message: validatedFields.error.errors[0].message,
@@ -41,7 +42,7 @@ export async function suggestWords(formData: FormData) {
   const { word, searchType, suggestionLimit } = validatedFields.data;
 
   const start = performance.now();
-  const suggestions =
+  const {suggestions, countComparisons} =
     searchType === 'trie'
       ? trie.suggest(word, suggestionLimit)
       : linearSuggest(word, suggestionLimit);
@@ -52,6 +53,7 @@ export async function suggestWords(formData: FormData) {
         message: 'No suggestions found',
         timeTaken: `${performance.now() - start}ms`,
         limit: suggestionLimit,
+        countComparisons,
       }
     : {
         word,
@@ -59,5 +61,6 @@ export async function suggestWords(formData: FormData) {
         result: suggestions,
         timeTaken: `${performance.now() - start}ms`,
         limit: suggestionLimit,
+        countComparisons
       };
 }

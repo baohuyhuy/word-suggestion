@@ -24,6 +24,7 @@ export default async function handleFormSubmit(
       result?: string[];
       timeTaken?: string;
       limit?: number;
+      countComparisons?: number;
     } = {
       message: validatedFields.error.errors[0].message,
     };

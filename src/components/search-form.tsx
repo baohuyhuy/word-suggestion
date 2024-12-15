@@ -16,6 +16,7 @@ const searchInitialState: {
   result?: string[];
   timeTaken?: string;
   limit?: number;
+  countComparisons?: number;
 } = {
   searchType: 'trie',
   word: '',
@@ -43,7 +44,7 @@ export default function SearchForm() {
             defaultValue={formState?.word}
           />
         </div>
-        
+
         <div className="flex flex-col gap-y-2">
           <Label htmlFor="searchType">Search method:</Label>
           <RadioGroup
@@ -122,6 +123,9 @@ export default function SearchForm() {
         {formState.message && <p aria-live="polite">{formState.message}</p>}
       </form>
       {formState.timeTaken && <p>Running time: {formState.timeTaken}</p>}
+      {formState.countComparisons && (
+        <p>Comparisons: {formState.countComparisons}</p>
+      )}
       {formState?.result && formState?.limit && (
         <div
           className={clsx(
