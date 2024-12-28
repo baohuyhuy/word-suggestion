@@ -1,4 +1,4 @@
-import { linearSuggest } from '@/utils/linear';
+import { dictionary } from '@/utils/linear';
 import { trie } from '@/utils/trie';
 import { z } from 'zod';
 
@@ -44,7 +44,7 @@ export async function suggestWords(formData: FormData) {
   const {suggestions, countComparisons} =
     searchType === 'trie'
       ? trie.suggest(word, suggestionLimit)
-      : linearSuggest(word, suggestionLimit);
+      : dictionary.suggest(word, suggestionLimit);
   return suggestions.length === 0
     ? {
         word,

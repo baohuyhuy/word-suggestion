@@ -1,3 +1,4 @@
+import { dictionary } from '@/utils/linear';
 import { trie } from '@/utils/trie';
 import { z } from 'zod';
 
@@ -33,11 +34,12 @@ export default function addWord(formData: FormData) {
   if (trie.search(word)) {
     return {
       word,
-      message: `Word "${word}" already exists in the trie`,
+      message: `Word "${word}" already exists`,
     };
   }
 
   trie.insert(word);
+  dictionary.insert(word);
   return {
     word,
     message: `Word "${word}" added successfully`,

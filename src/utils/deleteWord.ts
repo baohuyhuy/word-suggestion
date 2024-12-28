@@ -1,3 +1,4 @@
+import { dictionary } from '@/utils/linear';
 import { trie } from '@/utils/trie';
 import { z } from 'zod';
 
@@ -31,11 +32,11 @@ export default function deleteWord(formData: FormData) {
   const { word } = validatedFields.data;
   const success = trie.search(word);
   trie.delete(word);
-  console.log(success);
+  dictionary.delete(word);
   return {
     word,
     message: success
       ? `Word "${word}" deleted successfully`
-      : `Word "${word}" not found in the trie`,
+      : `Word "${word}" not found`,
   };
 }
