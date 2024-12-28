@@ -8,8 +8,8 @@ export default async function Home() {
       <div className='absolute top-4 right-4'>
         <ModeToggle />
       </div>
-      <TypographyH1>Word Suggestions</TypographyH1>
-      <p>Word Suggestions using Trie Data Structure vs. Linear Search</p>
+      <TypographyH1>Word Suggestion</TypographyH1>
+      <p>Word Suggestion using Trie Data Structure vs. Linear Search</p>
       <SearchForm />
     </div>
   );

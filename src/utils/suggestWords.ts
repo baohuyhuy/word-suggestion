@@ -35,7 +35,6 @@ export async function suggestWords(formData: FormData) {
       searchType: 'trie',
       message: validatedFields.error.errors[0].message,
     };
-    alert(error.message);
     return error;
   }
 
@@ -50,7 +49,7 @@ export async function suggestWords(formData: FormData) {
     ? {
         word,
         searchType,
-        message: 'No suggestions found',
+        message: 'No suggestion found',
         timeTaken: `${performance.now() - start}ms`,
         limit: suggestionLimit,
         countComparisons,

@@ -6,7 +6,7 @@ import { z } from 'zod';
 const Schema = z.object({
   actionType: z.enum(['search', 'add', 'delete'], {
     invalid_type_error: 'Please select an action type',
-  }),
+  }).default('search'),
 });
 
 export default async function handleFormSubmit(
@@ -32,7 +32,6 @@ export default async function handleFormSubmit(
   }
 
   const { actionType } = validatedFields.data;
-  console.log(actionType);
 
   if (actionType === 'search') {
     return suggestWords(formData);

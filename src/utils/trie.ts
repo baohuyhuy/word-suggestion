@@ -72,7 +72,6 @@ class Trie {
   }
 
   suggest(prefix: string, suggestionLimit: number) {
-    // console.log("Trie Search");
     let countComparisons = 0;
     let cur = this.root;
 

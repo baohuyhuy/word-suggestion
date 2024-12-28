@@ -6,7 +6,7 @@ import { Label } from '@/components/ui/label';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import handleFormSubmit from '@/utils/actions';
 import clsx from 'clsx';
-import { useActionState } from 'react';
+import { useActionState, useEffect, useRef, useState } from 'react';
 import { useFormStatus } from 'react-dom';
 
 const searchInitialState: {
@@ -29,10 +29,28 @@ export default function SearchForm() {
     searchInitialState,
   );
   const { pending } = useFormStatus();
+  const [input, setInput] = useState('');
+  const formRef = useRef<HTMLFormElement>(null);
+
+  useEffect(() => {
+    const id = setTimeout(() => {
+      formRef.current?.requestSubmit();
+    }, 500);
+    return () => clearTimeout(id);
+  }, [input]);
 
   return (
     <>
-      <form className="flex flex-col gap-y-4" action={formAction}>
+      <form
+        className="flex flex-col gap-y-4"
+        action={formAction}
+        ref={formRef}
+        onKeyDown={(e) => {
+          if (e.key === 'Enter') {
+            e.preventDefault();
+          }
+        }}
+      >
         <div className="flex flex-col gap-y-2">
           <Label htmlFor="word">Enter a word:</Label>
           <Input
@@ -41,7 +59,10 @@ export default function SearchForm() {
             type="text"
             required
             autoComplete="off"
-            defaultValue={formState?.word}
+            value={input}
+            onChange={(e) => {
+              setInput(e.target.value);
+            }}
           />
         </div>
 
@@ -52,11 +73,21 @@ export default function SearchForm() {
             defaultValue="trie"
             className="flex gap-4"
           >
-            <div className="flex items-center space-x-2">
+            <div
+              className="flex items-center space-x-2"
+              onClick={() => {
+                formRef.current?.requestSubmit();
+              }}
+            >
               <RadioGroupItem value="trie" id="trie" />
               <Label htmlFor="trie">Trie</Label>
             </div>
-            <div className="flex items-center space-x-2">
+            <div
+              className="flex items-center space-x-2"
+              onClick={() => {
+                formRef.current?.requestSubmit();
+              }}
+            >
               <RadioGroupItem value="linear" id="linear" />
               <Label htmlFor="linear">Linear</Label>
             </div>
@@ -70,43 +101,52 @@ export default function SearchForm() {
             defaultValue="1"
             className="flex gap-4"
           >
-            <div className="flex items-center space-x-2">
+            <div
+              className="flex items-center space-x-2"
+              onClick={() => formRef.current?.requestSubmit()}
+            >
               <RadioGroupItem value="1" id="1" />
               <Label htmlFor="1">1</Label>
             </div>
-            <div className="flex items-center space-x-2">
+            <div
+              className="flex items-center space-x-2"
+              onClick={() => formRef.current?.requestSubmit()}
+            >
               <RadioGroupItem value="10" id="10" />
               <Label htmlFor="10">10</Label>
             </div>
-            <div className="flex items-center space-x-2">
-              <RadioGroupItem value="30" id="30" />
-              <Label htmlFor="30">30</Label>
-            </div>
-            <div className="flex items-center space-x-2">
-              <RadioGroupItem value="50" id="50" />
-              <Label htmlFor="50">50</Label>
-            </div>
-            <div className="flex items-center space-x-2">
+            <div
+              className="flex items-center space-x-2"
+              onClick={() => formRef.current?.requestSubmit()}
+            >
               <RadioGroupItem value="100" id="100" />
               <Label htmlFor="100">100</Label>
+            </div>
+
+            <div
+              className="flex items-center space-x-2"
+              onClick={() => formRef.current?.requestSubmit()}
+            >
+              <RadioGroupItem value="1000" id="1000" />
+              <Label htmlFor="1000">1000</Label>
+            </div>
+
+            <div
+              className="flex items-center space-x-2"
+              onClick={() => formRef.current?.requestSubmit()}
+            >
+              <RadioGroupItem value="10000" id="10000" />
+              <Label htmlFor="10000">10000</Label>
             </div>
           </RadioGroup>
         </div>
 
         <div className="flex gap-4">
           <Button
-            type="submit"
-            disabled={pending}
-            name="actionType"
-            value="search"
-          >
-            Search
-          </Button>
-          <Button
             disabled={pending}
             name="actionType"
             value="add"
-            type="submit"
+            onClick={() => formRef.current?.requestSubmit()}
           >
             Add Word
           </Button>
@@ -114,7 +154,7 @@ export default function SearchForm() {
             disabled={pending}
             name="actionType"
             value="delete"
-            type="submit"
+            onClick={() => formRef.current?.requestSubmit()}
           >
             Delete Word
           </Button>
@@ -139,7 +179,7 @@ export default function SearchForm() {
           )}
         >
           {formState.result.map((word) => (
-            <span className="border p-2 font-semibold" key={word}>
+            <span className="border p-2 font-semibold rounded-lg" key={word}>
               {word}
             </span>
           ))}

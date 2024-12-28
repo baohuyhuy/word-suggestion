@@ -13,7 +13,6 @@ export function linearSuggest(prefix: string, suggestionLimit: number) {
 
   const suggestions: string[] = [];
   const words = Object.keys(data);
-  // console.log('Linear Search');
   for (let i = 0; ++countComparisons && i < words.length; i++) {
     if (++countComparisons && suggestions.length >= suggestionLimit) break;
     if (isStartWith(words[i], prefix)) {
